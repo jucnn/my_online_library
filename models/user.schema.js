@@ -1,7 +1,10 @@
 /*
 Import
 */
+const passport = require('passport');
 const mongoose = require('mongoose');
+const passportLocalMongoose = require('passport-local-mongoose');
+
 const {
     Schema
 } = mongoose;
@@ -38,6 +41,8 @@ const UserSchema = new Schema({
 /*
 Export
 */
-const UserModel = mongoose.model('user', UserSchema);
-module.exports = UserModel;
+UserSchema.plugin(passportLocalMongoose);
+
+const User = mongoose.model('user', UserSchema);
+module.exports = User;
 //

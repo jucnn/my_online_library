@@ -7,6 +7,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const path = require('path');
+
+
 //
 
 // Inner Modules
@@ -59,6 +61,7 @@ class ServerClass {
 
         // Set front router
         server.get('/*', (req, res) => res.render('index'));
+
 
         // Launch server
         this.launch();

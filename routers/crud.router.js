@@ -6,7 +6,8 @@ Imports
 const express = require("express");
 const router = express.Router();
 
-// Secure 
+
+// Secure
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
@@ -15,6 +16,8 @@ const jwt = require("jsonwebtoken");
 //Inner
 const BookModel = require("../models/book.schema");
 const UserModel = require("../models/user.schema");
+const passport = require('passport');
+
 
 /*
 Routes definition
@@ -24,22 +27,23 @@ class CrudRouterClass {
 
     // Set route fonctions
     routes() {
-        // Register
 
+
+        // Register
         router.post("/register", (req, res) => {
             // Save user data
             const params = req.body;
             bcrypt
                 .hash(params.password, saltRounds)
                 .then(hash => {
-                    // Change user password
+                    // Change user password with password hashed
                     params.password = hash;
 
                     UserModel.create(params)
                         .then(document =>
                             res.status(201).json({
                                 method: "POST",
-                                route: `/api/mongo/register`,
+                                route: `/api/register`,
                                 data: document,
                                 error: null,
                                 status: 201
@@ -48,7 +52,7 @@ class CrudRouterClass {
                         .catch(err =>
                             res.status(502).json({
                                 method: "POST",
-                                route: `/api/mongo/register`,
+                                route: `/api/register`,
                                 data: null,
                                 error: err,
                                 status: 502
@@ -58,137 +62,164 @@ class CrudRouterClass {
                 .catch(hashError =>
                     res.status(500).json({
                         method: "POST",
-                        route: `/api/mongo/auth/register`,
+                        route: `/api/register`,
                         data: null,
                         error: hashError,
                         status: 500
                     })
                 );
+
         });
-        //
 
         // Login
         router.post("/login", (req, res) => {
-            let getUser;
+            const params = req.body;
+
             UserModel.findOne({
-                email: req.body.email
-            }).then(user => {
-                if (!user) {
-                    return res.status(401).json({
-                        message: "Authentication failed"
-                    });
+                    email: params.email
+                },
+                (err, user) => {
+                    if (err) {
+                        return res.status(500).json({
+                            method: "POST",
+                            route: `/api/login`,
+                            data: null,
+                            error: err,
+                            status: 500
+                        });
+                    } else {
+                        // Load hash from your password DB.
+                        const password = bcrypt.compareSync(params.password, user.password);
+                        let accessToken = jwt.sign({
+                                email: user.email,
+                                userId: user._id
+                            },
+                            process.env.ACCESS_TOKEN_SECRET, {
+                                expiresIn: '24h' // expires in 24 hours
+                            }
+                        );
+
+                        if (password) {
+                            return res.status(201).json({
+                                method: "POST",
+                                route: `/api/login`,
+                                data: {
+                                    user,
+                                    accessToken
+                                },
+                                error: null,
+                                status: 201
+                            });
+
+                        } else {
+                            return res.status(201).json({
+                                method: "POST",
+                                route: `/api/login`,
+                                data: null,
+                                error: "Invalid password",
+                                status: 500
+                            });
+                        }
+                    }
                 }
-                getUser = user;
-                return bcrypt.compare(req.body.password, user.password);
-            }).then(response => {
-                if (!response) {
-                    return res.status(401).json({
-                        message: "Authentication failed"
-                    });
-                }
-                let jwtToken = jwt.sign({
-                    email: getUser.email,
-                    userId: getUser._id
-                }, "longer-secret-is-better", {
-                    expiresIn: "1h"
-                });
-                res.status(200).json({
-                    token: jwtToken,
-                    expiresIn: 3600,
-                    msg: getUser
-                });
-            }).catch(err => {
-                return res.status(401).json({
-                    message: "Authentication failed"
-                });
-            });
+            );
         });
 
+        function verifyToken(req, res, next) {
+            try {
+                const token = req.headers.authorization.split(" ")[1];
+                jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+                next();
+            } catch (error) {
+                res.status(401).json({
+                    message: "Authentication failed!"
+                });
+            }
+        }
 
-        // Login
-        // router.post("/login", (req, res) => {
-
-        //     UserModel.findOne(
-        //     {
-        //       email: req.body.email
-        //     },
-        //     (err, user) => {
-        //       if (err) {
-        //         return res.status(500).json({
-        //           method: "POST",
-        //           route: `/api/mongo/login`,
-        //           data: null,
-        //           error: err,
-        //           status: 500
-        //         });
-        //       } else {
-        //         // Check user password
-        //         if (!bcrypt.compareSync(req.body.password, user.password)) {
-        //           return res.status(500).json({
-        //             method: "POST",
-        //             route: `/api/mongo/login`,
-        //             data: null,
-        //             error: "Invalid password",
-        //             status: 500
-        //           });
-        //         } else {
-        //           return res.status(201).json({
-        //             method: "POST",
-        //             route: `/api/mongo/login`,
-        //             data: user,
-        //             error: null,
-        //             status: 201
-        //           });
-        //         }
-        //       }
-        //     });
-        // });
-        // //
+        router.get('/me', verifyToken, (req, res) => {
+            UserModel.findById(req.params.id, (err, user) => {
+                if (err) {
+                    return res.status(500).send({
+                        err: err
+                    })
+                } else {
+                    res.status(200).json({
+                        msg: user
+                    })
+                }
+            })
+        })
 
         // Create one item
         router.post("/:endpoint", (req, res) => {
-            BookModel.create(req.body)
-                .then(document =>
-                    res.status(201).json({
-                        method: "POST",
-                        route: `/api/${req.params.endpoint}`,
-                        data: document,
-                        error: null,
-                        status: 201
-                    })
-                )
-                .catch(err =>
-                    res.status(502).json({
-                        method: "POST",
-                        route: `/api/${req.params.endpoint}`,
-                        data: null,
-                        error: err,
-                        status: 502
-                    })
-                );
+            let data = {};
+
+            if (req.params.endpoint === 'book' || req.params.endpoint === 'favorites') {
+                data = {
+                    name: req.body.name,
+                    author: req.body.author,
+                    description: req.body.description,
+                }
+
+                BookModel.create(data)
+                    .then(document =>
+                        res.status(201).json({
+                            method: "POST",
+                            route: `/api/${req.params.endpoint}`,
+                            data: document,
+                            error: null,
+                            status: 201
+                        })
+                    )
+                    .catch(err =>
+                        res.status(502).json({
+                            method: "POST",
+                            route: `/api/${req.params.endpoint}`,
+                            data: null,
+                            error: err,
+                            status: 502
+                        })
+                    );
+            }
+
+
+
+
+
         });
 
         // Read all MongoDB documents
         router.get("/:endpoint", (req, res) => {
-            BookModel.find()
-                .then(documents =>
-                    res.status(200).json({
-                        method: "GET",
-                        route: `/api/${req.params.endpoint}`,
-                        data: documents,
-                        error: null,
-                        status: 200
-                    })
-                )
-                .catch(err =>
-                    res.status(502).json({
-                        method: "GET",
-                        route: `/api/${req.params.endpoint}`,
-                        data: null,
-                        error: err,
-                        status: 502
-                    })
-                );
+            if (req.params.endpoint === 'books') {
+                BookModel.find()
+                    .then(documents =>
+                        res.status(200).json({
+                            method: "GET",
+                            route: `/api/${req.params.endpoint}`,
+                            data: documents,
+                            error: null,
+                            status: 200
+                        })
+                    )
+                    .catch(err =>
+                        res.status(502).json({
+                            method: "GET",
+                            route: `/api/${req.params.endpoint}`,
+                            data: null,
+                            error: err,
+                            status: 502
+                        })
+                    );
+            } else {
+                res.status(502).json({
+                    method: "GET",
+                    route: `/api/${req.params.endpoint}`,
+                    data: null,
+                    error: "Route issue",
+                    status: 502
+                })
+            }
         });
 
         // Read one MongoDB document
