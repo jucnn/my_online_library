@@ -13,15 +13,8 @@ Definition
 */
 const BookSchema = new Schema({
     id: String,
-    title: String,
-    authors: Array,
-    publisher: String,
-    publishedDate: Date,
-    description: String,
-    pageCount: Number,
-    thumbnail: String,
-    country: String,
-    isbn: Number
+    user_id: String,
+    options: ['in_my_lib', 'favorite', 'have_read', 'reading', 'to_buy', 'to_sell']
 });
 //
 

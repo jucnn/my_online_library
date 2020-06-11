@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchFormData = document.querySelector('#searchFormData');
     const searchButton = document.querySelector('#searchButton');
 
+    const bookList = document.querySelector('#bookList');
+
+
+    /* 
+        Display functions
+    */
 
     const displayNav = name => {
         userNav.innerHTML = `
@@ -37,6 +43,25 @@ document.addEventListener('DOMContentLoaded', () => {
             loginForm.classList.remove('hidden');
         })
     }
+
+    const displayBookList = collection => {
+        searchFormData.value = '';
+        bookList.innerHTML = '';
+            console.log(collection);
+
+        for (let item of collection) {
+            bookList.innerHTML += `
+                    <article>
+                        <figure>
+                            <img src = "${item.volumeInfo.imageLinks.thumbnail}"
+                            alt = "${item.volumeInfo.title}" >
+                            <figcaption book-id="${item.id}">${item.volumeInfo.title}</figcaption>
+                        </figure>
+                    </article>
+                `;
+        };
+
+    };
 
 
     const checkUserToken = () => {
@@ -126,12 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
     searchButton.addEventListener("click", event => {
         event.preventDefault();
         new FETCHrequest(`${nodeApiUrl}/books/search`, 'POST', {
-            keywords: searchFormData.value
-        })
+                keywords: searchFormData.value
+            })
             .fetch()
             .then(fetchData => {
                 console.log(fetchData);
-
+                displayBookList(fetchData.items);
             })
             .catch(fetchError => {
                 console.log(fetchError)
