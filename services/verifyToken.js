@@ -17,7 +17,7 @@
                         msg: 'Failed to authentificate token.'
                     });
                 } else {
-                    req.userId = decoded.id;
+                    req.userId = decoded.userId;
                     next();
                 }
             });

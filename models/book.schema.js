@@ -12,9 +12,16 @@ const {
 Definition
 */
 const MySchema = new Schema({
-    name: String,
-    author: String,
-    description: String
+    id: String,
+    title: String,
+    authors: Array,
+    publisher: String,
+    publishedDate: Date,
+    description: String,
+    pageCount: Number,
+    thumbnail: String,
+    country: String,
+    isbn: Number
 });
 //
 
