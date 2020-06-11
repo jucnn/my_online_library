@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 
 //Inner
 const UserModel = require("../models/user.schema");
+const BookModel = require("../models/book.schema");
 
 
 exports.register = (req, res) => {
@@ -106,7 +107,7 @@ exports.login = (req, res) => {
     );
 }
 
-exports.me = (req, res) => {
+exports.getInfoUser = (req, res) => {
     UserModel.findById(req.userId, {
         password: 0
     }, (err, user) => {
@@ -147,3 +148,10 @@ exports.getOneUser = (req, res) => {
             })
         );
 }
+
+// exports.addFavorites = (req, res) => {
+//     UserModel.findById(req.params.id)
+//     .then(document =>{
+
+//     })
+// }

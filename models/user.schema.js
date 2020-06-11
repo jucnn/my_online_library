@@ -1,9 +1,7 @@
 /*
 Import
 */
-const passport = require('passport');
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const {
     Schema
@@ -30,7 +28,8 @@ const UserSchema = new Schema({
         trim: true,
         required: true,
         type: String,
-    }
+    },
+    bookmarks: require("./book.schema").Book
 });
 // //
 // // hash user password before saving into database
@@ -38,10 +37,10 @@ const UserSchema = new Schema({
 //     this.password = bcrypt.hashSync(this.password, saltRounds);
 //     next();
 // });
+
 /*
 Export
 */
-UserSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model('user', UserSchema);
 module.exports = User;

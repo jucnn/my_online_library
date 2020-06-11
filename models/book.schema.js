@@ -11,7 +11,7 @@ const {
 /*
 Definition
 */
-const MySchema = new Schema({
+const BookSchema = new Schema({
     id: String,
     title: String,
     authors: Array,
@@ -28,6 +28,6 @@ const MySchema = new Schema({
 /*
 Export
 */
-const MyModel = mongoose.model('book', MySchema);
-module.exports = MyModel;
+const Book = mongoose.model('book', BookSchema);
+module.exports = {Book : BookSchema};
 //
