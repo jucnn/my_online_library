@@ -19,11 +19,11 @@ router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.get('/user/:id', userController.getOneUser);
 router.get('/me', auth, userController.getInfoUser)
-// router.put('/me/bookmarks', userController.addFavorites)
+router.put('/me/bookmarks', auth, userController.addFavorites)
 
 //Book routes
 router.get('/openlibrary/search', bookController.openResearchBooks);
-router.get('/books/search', bookController.researchBooks);
+router.post('/books/search', bookController.researchBooks);
 
 
 

@@ -29,7 +29,7 @@ const UserSchema = new Schema({
         required: true,
         type: String,
     },
-    bookmarks: require("./book.schema").Book
+    bookmarks: Array
 });
 // //
 // // hash user password before saving into database

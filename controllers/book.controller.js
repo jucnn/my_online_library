@@ -13,10 +13,11 @@ exports.openResearchBooks = (req, res) => {
         });
 }
 
-const googleBookApiUrl = 'https://www.googleapis.com/books/v1/volumes'
+const googleBookApiUrl = 'https://www.googleapis.com/books/v1/volumes';
+const apiKey = 'AIzaSyANVRaA6MlLTpQ1eUySanh0hx6O0zK8Tts';
 
 exports.researchBooks =  (req, res) => {
-    fetch(googleBookApiUrl + '?q=' + req.body.keywords)
+    fetch(googleBookApiUrl + '?q=' + req.body.keywords + '&key=' + apiKey)
     .then(function (response) {
         return response.json();
     })
