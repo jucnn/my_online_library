@@ -11,9 +11,10 @@ const {
 /*
 Definition
 */
-const BookSchema = new Schema({
+const BookmarkSchema = new Schema({
     id: String,
     user_id: String,
+    book_id: String,
     options: ['in_my_lib', 'favorite', 'have_read', 'reading', 'to_buy', 'to_sell']
 });
 //
@@ -21,6 +22,6 @@ const BookSchema = new Schema({
 /*
 Export
 */
-const Book = mongoose.model('book', BookSchema);
-module.exports = {Book : BookSchema};
+const Bookmark = mongoose.model('book', BookmarkSchema);
+module.exports = Bookmark;
 //

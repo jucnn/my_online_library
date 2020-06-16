@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Controllers
 const userController = require('../controllers/user.controller');
-const bookController = require('../controllers/book.controller');
+const bookmarksController = require('../controllers/bookmarks.controller');
 
 //Token
 const auth = require('../middlewares/auth')
@@ -19,11 +19,13 @@ router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.get('/user/:id', userController.getOneUser);
 router.get('/me', auth, userController.getInfoUser)
-router.put('/me/bookmarks', auth, userController.addFavorites)
+
 
 //Book routes
-router.get('/openlibrary/search', bookController.openResearchBooks);
-router.post('/books/search', bookController.researchBooks);
+router.get('/openlibrary/search', bookmarksController.openResearchBooks);
+router.post('/books/search', bookmarksController.researchBooks);
+router.post('/bookmarks', auth, bookmarksController.addBookmarks)
+router.get('/me/bookmarks', auth, bookmarksController.getBookmarksByUser)
 
 
 

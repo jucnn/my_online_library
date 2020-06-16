@@ -10,7 +10,6 @@ const jwt = require("jsonwebtoken");
 
 //Inner
 const UserModel = require("../models/user.schema");
-const BookModel = require("../models/book.schema");
 
 
 exports.register = (req, res) => {
@@ -149,31 +148,3 @@ exports.getOneUser = (req, res) => {
         );
 }
 
-exports.addFavorites = (req, res) => {
-    UserModel.findById(req.userId)
-        .then(document => {
-            // Update document
-            document.bookmarks = req.body.bookmarks;
-
-            // Save document
-            document.save()
-                .then(updatedDocument => res.status(200).json({
-                    method: 'PUT',
-                    data: updatedDocument,
-                    error: null,
-                    status: 200
-                }))
-                .catch(err => res.status(502).json({
-                    method: 'PUT',
-                    data: null,
-                    error: err,
-                    status: 502
-                }));
-        })
-        .catch(err => res.status(404).json({
-            method: 'PUT',
-            data: null,
-            error: err,
-            status: 404
-        }));
-}

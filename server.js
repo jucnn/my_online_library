@@ -56,7 +56,7 @@ class ServerClass {
     config() {
         // Set auth router
         const crudRouter = require('./routers/crud.router');
-        
+
         server.use('/api', crudRouter);
 
         // Set front router
