@@ -54,10 +54,8 @@ exports.addBookmarks = (req, res) => {
 
 
 exports.getBookmarksByUser = (req, res) => {
-    const token = req.headers['x-access-token'];
-
     BookmarkModel.find({
-        'user_id': token
+        'user_id': req.body.userId
     }, function (err, bookmarks) {
         if (err) {
             return res.status(500).send({
