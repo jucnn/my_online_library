@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchButton = document.querySelector('#searchButton');
 
     const bookList = document.querySelector('#bookList');
+    const oneBookButton = document.querySelector('.more-book');
+    const bookIsbn = oneBookButton.getAttribute("isbn-book");
 
 
     /* 
@@ -47,10 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayBookList = collection => {
         searchFormData.value = '';
         bookList.innerHTML = '';
-            console.log(collection);
+        console.log(collection);
 
         for (let item of collection) {
             bookList.innerHTML += `
+                <a href = "" class="more-book"
+                isbn-book = "${item.volumeInfo.industryIdentifiers[0].identifier}" >
                     <article>
                         <figure>
                             <img src = "${item.volumeInfo.imageLinks.thumbnail}"
@@ -58,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <figcaption book-id="${item.id}">${item.volumeInfo.title}</figcaption>
                         </figure>
                     </article>
+                </a>
                 `;
         };
 
@@ -157,6 +162,22 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(fetchData => {
                 console.log(fetchData);
                 displayBookList(fetchData.items);
+            })
+            .catch(fetchError => {
+                console.log(fetchError)
+            })
+
+    });
+
+
+    oneBookButton.addEventListener("click", event => {
+        event.preventDefault();
+        new FETCHrequest(`${nodeApiUrl}/book`, 'POST', {
+                isbn: bookIsbn.value
+            })
+            .fetch()
+            .then(fetchData => {
+                console.log(fetchData);
             })
             .catch(fetchError => {
                 console.log(fetchError)

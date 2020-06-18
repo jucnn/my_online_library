@@ -26,6 +26,16 @@ exports.researchBooks = (req, res) => {
         });
 }
 
+exports.showBook = (req, res) => {
+    fetch(googleBookApiUrl + '?q=' + req.body.isbn + '&key=' + apiKey)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (json) {
+            res.json(json);
+        });
+}
+
 exports.addBookmarks = (req, res) => {
     // Save user data
     const params = req.body;
@@ -45,6 +55,29 @@ exports.addBookmarks = (req, res) => {
             res.status(502).json({
                 method: "POST",
                 route: `/api/register`,
+                data: null,
+                error: err,
+                status: 502
+            })
+        );
+}
+
+exports.deleteBookmarks = (req, res) => {
+    BookmarkModel.findByIdAndDelete(req.params.id)
+        .then(document =>
+            res.status(201).json({
+                method: "DELETE",
+                route: `/me/bookmark/${req.params.id}`,
+                data: document,
+                msg: 'Bookmark deleted !',
+                error: null,
+                status: 201
+            })
+        )
+        .catch(err =>
+            res.status(502).json({
+                method: "DELETE",
+                route: `/me/bookmarks/${req.params.id}`,
                 data: null,
                 error: err,
                 status: 502
