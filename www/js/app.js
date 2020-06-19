@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchButton = document.querySelector('#searchButton');
 
     const bookList = document.querySelector('#bookList');
-    const oneBookButton = document.querySelector('.more-book');
-    const bookIsbn = oneBookButton.getAttribute("isbn-book");
 
 
     /* 
@@ -46,27 +44,52 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
+    const moreInfoBook = (books) => {
+        for (let book of books) {
+            book.addEventListener("click", event => {
+                event.preventDefault();
+                const bookId = book.getAttribute("bookId");
+                console.log(bookId);
+                new FETCHrequest(`${nodeApiUrl}/book`, 'POST', {
+                        id: bookId
+                    })
+                    .fetch()
+                    .then(fetchData => {
+                        console.log(fetchData.items[0]);
+                    })
+                    .catch(fetchError => {
+                        console.log(fetchError)
+                    })
+
+            });
+        }
+    }
+
     const displayBookList = collection => {
         searchFormData.value = '';
         bookList.innerHTML = '';
-        console.log(collection);
 
         for (let item of collection) {
             bookList.innerHTML += `
-                <a href = "" class="more-book"
-                isbn-book = "${item.volumeInfo.industryIdentifiers[0].identifier}" >
                     <article>
                         <figure>
                             <img src = "${item.volumeInfo.imageLinks.thumbnail}"
                             alt = "${item.volumeInfo.title}" >
                             <figcaption book-id="${item.id}">${item.volumeInfo.title}</figcaption>
                         </figure>
+                        <button class="more-book" bookId="${item.id}"> Plus d'info </button>
                     </article>
-                </a>
                 `;
         };
+        const oneBookButton = document.querySelectorAll('.more-book');
+        console.log(oneBookButton);
+        moreInfoBook(oneBookButton);
 
     };
+
+    /*
+        Display auth user info
+    */
 
 
     const checkUserToken = () => {
@@ -78,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
             )
             .fetch()
             .then(fetchData => {
-                console.log(fetchData);
                 searchForm.classList.remove('hidden');
                 registerForm.classList.add('hidden');
                 loginForm.classList.add('hidden');
@@ -88,6 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(fetchError);
             })
     };
+
+    /*
+        Form functions
+    */
 
     registerForm.addEventListener('submit', event => {
         event.preventDefault();
@@ -140,8 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .fetch()
                 .then(fetchData => {
-                    console.log(fetchData)
-
                     localStorage.setItem('token', fetchData.data.token);
                     checkUserToken();
                 })
@@ -153,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
     searchButton.addEventListener("click", event => {
         event.preventDefault();
         new FETCHrequest(`${nodeApiUrl}/books/search`, 'POST', {
@@ -160,35 +185,18 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .fetch()
             .then(fetchData => {
-                console.log(fetchData);
                 displayBookList(fetchData.items);
             })
             .catch(fetchError => {
                 console.log(fetchError)
             })
-
     });
 
 
-    oneBookButton.addEventListener("click", event => {
-        event.preventDefault();
-        new FETCHrequest(`${nodeApiUrl}/book`, 'POST', {
-                isbn: bookIsbn.value
-            })
-            .fetch()
-            .then(fetchData => {
-                console.log(fetchData);
-            })
-            .catch(fetchError => {
-                console.log(fetchError)
-            })
-
-    });
 
 
     //check if user is connected
     if (localStorage.getItem('token') !== null) {
-
         checkUserToken();
 
     } else {

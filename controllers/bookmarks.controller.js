@@ -27,7 +27,7 @@ exports.researchBooks = (req, res) => {
 }
 
 exports.showBook = (req, res) => {
-    fetch(googleBookApiUrl + '?q=' + req.body.isbn + '&key=' + apiKey)
+    fetch(googleBookApiUrl + '?q=' + req.body.id + '&key=' + apiKey)
         .then(function (response) {
             return response.json();
         })
