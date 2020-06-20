@@ -35,7 +35,8 @@ class ServerClass {
 
         // View engine configuration
         server.engine('html', ejs.renderFile);
-        server.set('view engine', 'html');
+        server.set('view engine', 'ejs');
+        
 
         // Static path configuration
         server.set('views', __dirname + '/www');
@@ -60,7 +61,9 @@ class ServerClass {
         server.use('/api', crudRouter);
 
         // Set front router
-        server.get('/*', (req, res) => res.render('index'));
+        server.get('/', (req, res) => res.render('index'));
+        server.get('/book/*', (req, res) => res.render('book'));
+
 
 
         // Launch server

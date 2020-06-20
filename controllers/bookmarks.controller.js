@@ -37,15 +37,12 @@ exports.showBook = (req, res) => {
 }
 
 exports.addBookmarks = (req, res) => {
-    // Save user data
     const params = req.body;
-    // Change user password with password hashed
 
     BookmarkModel.create(params)
         .then(document =>
             res.status(201).json({
                 method: "POST",
-                route: `/api/register`,
                 data: document,
                 error: null,
                 status: 201
@@ -54,7 +51,6 @@ exports.addBookmarks = (req, res) => {
         .catch(err =>
             res.status(502).json({
                 method: "POST",
-                route: `/api/register`,
                 data: null,
                 error: err,
                 status: 502

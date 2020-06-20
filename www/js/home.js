@@ -13,13 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerEmail = document.querySelector('[name="registerEmail"]');
     const registerPassword = document.querySelector('[name="registerPassword"]');
 
-
     const userNav = document.querySelector("header nav");
+
+    // Variable search books
     const searchForm = document.querySelector('#searchForm');
     const searchFormData = document.querySelector('#searchFormData');
     const searchButton = document.querySelector('#searchButton');
 
+    // Variable books
     const bookList = document.querySelector('#bookList');
+
 
 
     /* 
@@ -47,19 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const moreInfoBook = (books) => {
         for (let book of books) {
             book.addEventListener("click", event => {
-                event.preventDefault();
+                const bookTitle = book.getAttribute("bookTitle").toLowerCase().replace(/ /g, "-").replace(/,/g, "");
                 const bookId = book.getAttribute("bookId");
-                console.log(bookId);
-                new FETCHrequest(`${nodeApiUrl}/book`, 'POST', {
-                        id: bookId
-                    })
-                    .fetch()
-                    .then(fetchData => {
-                        console.log(fetchData.items[0]);
-                    })
-                    .catch(fetchError => {
-                        console.log(fetchError)
-                    })
+                localStorage.setItem('bookId', bookId);
+                window.location.href = `/book/${bookTitle}`;
 
             });
         }
@@ -71,13 +65,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let item of collection) {
             bookList.innerHTML += `
-                    <article>
-                        <figure>
-                            <img src = "${item.volumeInfo.imageLinks.thumbnail}"
-                            alt = "${item.volumeInfo.title}" >
-                            <figcaption book-id="${item.id}">${item.volumeInfo.title}</figcaption>
-                        </figure>
-                        <button class="more-book" bookId="${item.id}"> Plus d'info </button>
+                    <article style="display:flex">
+                        <div>
+                            <figure>
+                                <img src = "${item.volumeInfo.imageLinks.thumbnail}"
+                                alt = "${item.volumeInfo.title}" >
+                                <figcaption book-id="${item.id}">${item.volumeInfo.title}</figcaption>
+                            </figure>
+                            <button class="more-book" bookId="${item.id}" bookTitle="${item.volumeInfo.title}"> Plus d'info </button>
+                        </div>
+                        <div>
+                            <p>Ajouter à une liste :</p>
+                            <ul class="add-to-list">
+                                <li><button class="favorite">Mes favoris</button></li>
+                                <li><button class="have_read">Mes livres lus</button></li>
+                                <li><button class="reading">Mes lectures en cours</button></li>
+                                <li><button class="to_buy">A acheter</button></li>
+                                <li><button class="to_sell">A vendre</button></li>
+                            </ul>
+                        </div>
                     </article>
                 `;
         };
@@ -85,7 +91,33 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(oneBookButton);
         moreInfoBook(oneBookButton);
 
+        const buttonsAddToList = document.querySelectorAll(".add-to-list li button")
+        console.log(buttonsAddToList);
+        addToBookmarks();
     };
+
+    const addToBookmarks = () => {
+
+        for (let buttonAddToList of buttonsAddToList) {
+            console.log(buttonAddToList);
+        }
+
+        buttonAddToList.addEventListener("click", event => {
+            event.preventDefault();
+            console.log(this)
+            // new FETCHrequest(`${nodeApiUrl}/me/bookmark/${}`, 'POST', {
+            //         keywords: searchFormData.value
+            //     })
+            //     .fetch()
+            //     .then(fetchData => {
+            //         displayBookList(fetchData.items);
+            //     })
+            //     .catch(fetchError => {
+            //         console.log(fetchError)
+            //     })
+        });
+    }
+
 
     /*
         Display auth user info
