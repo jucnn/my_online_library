@@ -18,7 +18,7 @@ const auth = require('../middlewares/auth')
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.get('/user/:id', userController.getOneUser);
-router.get('/me', auth, userController.getInfoUser)
+router.get('/profil', auth, userController.getInfoUser)
 
 
 //Book routes
@@ -26,9 +26,9 @@ router.get('/openlibrary/search', bookmarksController.openResearchBooks);
 router.post('/books/search', bookmarksController.researchBooks);
 router.get('/book/:id', bookmarksController.showBook);
 
-router.post('/bookmarks', auth, bookmarksController.addBookmarks)
-router.get('/me/bookmarks', auth, bookmarksController.getBookmarksByUser)
-router.delete('/me/bookmark/:id', auth, bookmarksController.getBookmarksByUser)
+router.post('/bookmarks', bookmarksController.addBookmarks)
+router.get('/profil/bookmarks', auth, bookmarksController.getBookmarksByUser)
+router.delete('/profil/bookmark/:id', auth, bookmarksController.getBookmarksByUser)
 
 
 

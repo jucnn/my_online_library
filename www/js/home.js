@@ -29,10 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
         Display functions
     */
 
-    const displayNav = name => {
+    const displayNav = (name, id) => {
         userNav.innerHTML = `
-                <h2>Hello ${name}</h2>
-                <button id="logoutBtn">Log out</button>
+                <h2 user-id="${id}">Hello ${name}</h2>
+                <div style="display:flex">
+                    <button id="profilBtn">Mon profil</button>
+                    <button id="logoutBtn">Déconnexion</button>
+                </div>
             `;
 
         userNav.classList.remove('hidden');
@@ -45,7 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
             registerForm.classList.remove('hidden');
             loginForm.classList.remove('hidden');
         })
+
+        document.querySelector('#profilBtn').addEventListener('click', () => {
+                window.location.href = '/profil/';
+        })
     }
+
 
     const moreInfoBook = (books) => {
         for (let book of books) {
@@ -62,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayBookList = collection => {
         searchFormData.value = '';
         bookList.innerHTML = '';
-
+        const userId = document.querySelector('nav h2').getAttribute('user-id');
         for (let item of collection) {
             bookList.innerHTML += `
                     <article style="display:flex">
@@ -77,45 +85,54 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>
                             <p>Ajouter à une liste :</p>
                             <ul class="add-to-list">
-                                <li><button class="favorite">Mes favoris</button></li>
-                                <li><button class="have_read">Mes livres lus</button></li>
-                                <li><button class="reading">Mes lectures en cours</button></li>
-                                <li><button class="to_buy">A acheter</button></li>
-                                <li><button class="to_sell">A vendre</button></li>
+                                <li><button class="favorite" user-id="${userId}" book-id="${item.id}">Mes favoris</button></li>
+                                <li><button class="have_read" user-id="${userId}"  book-id="${item.id}">Mes livres lus</button></li>
+                                <li><button class="reading" user-id="${userId}"  book-id="${item.id}">Mes lectures en cours</button></li>
+                                <li><button class="to_buy" user-id="${userId}"  book-id="${item.id}">A acheter</button></li>
+                                <li><button class="to_sell" user-id="${userId}"  book-id="${item.id}">A vendre</button></li>
                             </ul>
                         </div>
                     </article>
                 `;
         };
-        const oneBookButton = document.querySelectorAll('.more-book');
+        let oneBookButton = document.querySelectorAll('.more-book');
         console.log(oneBookButton);
         moreInfoBook(oneBookButton);
 
-        const buttonsAddToList = document.querySelectorAll(".add-to-list li button")
+        let buttonsAddToList = document.querySelectorAll(".add-to-list li button")
         console.log(buttonsAddToList);
-        addToBookmarks();
+        addToBookmarks(buttonsAddToList);
     };
 
-    const addToBookmarks = () => {
+    const addToBookmarks = buttonsAddToList => {
 
         for (let buttonAddToList of buttonsAddToList) {
-            console.log(buttonAddToList);
+            buttonAddToList.addEventListener("click", event => {
+                event.preventDefault();
+                console.log(buttonAddToList);
+                let userId = buttonAddToList.getAttribute("user-id");
+                console.log(userId);
+                let bookId = buttonAddToList.getAttribute("book-id");
+                console.log(bookId);
+                let option = buttonAddToList.getAttribute("class");
+                console.log(option);
+
+                new FETCHrequest(`${nodeApiUrl}/bookmarks`, 'POST', {
+                        user_id: userId,
+                        book_id: bookId,
+                        options: option
+                    })
+                    .fetch()
+                    .then(fetchData => {
+                        console.log(fetchData);
+                    })
+                    .catch(fetchError => {
+                        console.log(fetchError);
+                    })
+            });
         }
 
-        buttonAddToList.addEventListener("click", event => {
-            event.preventDefault();
-            console.log(this)
-            // new FETCHrequest(`${nodeApiUrl}/me/bookmark/${}`, 'POST', {
-            //         keywords: searchFormData.value
-            //     })
-            //     .fetch()
-            //     .then(fetchData => {
-            //         displayBookList(fetchData.items);
-            //     })
-            //     .catch(fetchError => {
-            //         console.log(fetchError)
-            //     })
-        });
+        
     }
 
 
@@ -126,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const checkUserToken = () => {
         new FETCHrequest(
-                `${nodeApiUrl}/me`,
+                `${nodeApiUrl}/profil`,
                 'GET',
                 null,
                 localStorage.getItem('token')
@@ -136,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchForm.classList.remove('hidden');
                 registerForm.classList.add('hidden');
                 loginForm.classList.add('hidden');
-                displayNav(fetchData.data.name);
+                displayNav(fetchData.data.name, fetchData.data._id);
             })
             .catch(fetchError => {
                 console.log(fetchError);
@@ -198,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .fetch()
                 .then(fetchData => {
+                    console.log(fetchData)
                     localStorage.setItem('token', fetchData.data.token);
                     checkUserToken();
                 })

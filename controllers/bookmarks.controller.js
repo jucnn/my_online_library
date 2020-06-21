@@ -43,6 +43,7 @@ exports.addBookmarks = (req, res) => {
         .then(document =>
             res.status(201).json({
                 method: "POST",
+                route: `/api/bookmarks`,
                 data: document,
                 error: null,
                 status: 201
@@ -51,6 +52,7 @@ exports.addBookmarks = (req, res) => {
         .catch(err =>
             res.status(502).json({
                 method: "POST",
+                route: `/api/bookmarks`,
                 data: null,
                 error: err,
                 status: 502
@@ -73,7 +75,7 @@ exports.deleteBookmarks = (req, res) => {
         .catch(err =>
             res.status(502).json({
                 method: "DELETE",
-                route: `/me/bookmarks/${req.params.id}`,
+                route: `/me/bookmark/${req.params.id}`,
                 data: null,
                 error: err,
                 status: 502

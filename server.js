@@ -63,8 +63,7 @@ class ServerClass {
         // Set front router
         server.get('/', (req, res) => res.render('index'));
         server.get('/book/*', (req, res) => res.render('book'));
-
-
+        server.get('/profil/*', (req, res) => res.render('profil'));
 
         // Launch server
         this.launch();
