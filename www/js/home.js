@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookList = document.querySelector('#bookList');
 
 
-
     /* 
         Display functions
     */
@@ -83,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button class="more-book" bookId="${item.id}" bookTitle="${item.volumeInfo.title}"> Plus d'info </button>
                         </div>
                         <div>
-                            <p>Ajouter à une liste :</p>
+                            <p>Ajouter à une liste :</p> 
                             <ul class="add-to-list">
                                 <li><button class="favorite" user-id="${userId}" book-id="${item.id}">Mes favoris</button></li>
                                 <li><button class="have_read" user-id="${userId}"  book-id="${item.id}">Mes livres lus</button></li>

@@ -24,10 +24,10 @@ router.get('/profil', auth, userController.getInfoUser)
 //Book routes
 router.get('/openlibrary/search', bookmarksController.openResearchBooks);
 router.post('/books/search', bookmarksController.researchBooks);
-router.get('/book/:id', bookmarksController.showBook);
+router.post('/book/:id', bookmarksController.showBook);
 
 router.post('/bookmarks', bookmarksController.addBookmarks)
-router.get('/profil/bookmarks', auth, bookmarksController.getBookmarksByUser)
+router.post('/profil/bookmarks', auth, bookmarksController.getBookmarksByUser)
 router.delete('/profil/bookmark/:id', auth, bookmarksController.getBookmarksByUser)
 
 

@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#logoutBtn').addEventListener('click', () => {
             // Delete LocalStorage
             localStorage.removeItem('token');
-            userNav.innerHTML = '';
+            window.location.href = '/';
+
         })
 
         document.querySelector('#accueilBtn').addEventListener('click', () => {
@@ -44,9 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .fetch()
             .then(fetchData => {
                 displayNav(fetchData.data.name, fetchData.data._id);
-                console.log(fetchData.data._id);
                 getBookmarks(fetchData.data._id);
-                console.log(fetchData);
             })
             .catch(fetchError => {
                 console.log(fetchError);
@@ -55,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const getBookmarks = userId => {
-        new FETCHrequest(`${nodeApiUrl}/profil/bookmarks`, 'GET', {
+        console.log(userId);
+        new FETCHrequest(`${nodeApiUrl}/profil/bookmarks`, 'POST', {
                 userId: userId
             }, localStorage.getItem('token'))
             .fetch()
