@@ -65,7 +65,7 @@ exports.deleteBookmarks = (req, res) => {
         .then(document =>
             res.status(201).json({
                 method: "DELETE",
-                route: `/me/bookmark/${req.params.id}`,
+                route: `/profil/bookmark/${req.params.id}`,
                 data: document,
                 msg: 'Bookmark deleted !',
                 error: null,
@@ -75,7 +75,7 @@ exports.deleteBookmarks = (req, res) => {
         .catch(err =>
             res.status(502).json({
                 method: "DELETE",
-                route: `/me/bookmark/${req.params.id}`,
+                route: `/profil/bookmark/${req.params.id}`,
                 data: null,
                 error: err,
                 status: 502

@@ -28,7 +28,7 @@ router.post('/book/:id', bookmarksController.showBook);
 
 router.post('/bookmarks', bookmarksController.addBookmarks)
 router.post('/profil/bookmarks', auth, bookmarksController.getBookmarksByUser)
-router.delete('/profil/bookmark/:id', auth, bookmarksController.getBookmarksByUser)
+router.delete('/profil/bookmark/:id', bookmarksController.deleteBookmarks)
 
 
 

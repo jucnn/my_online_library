@@ -110,11 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault();
                 console.log(buttonAddToList);
                 let userId = buttonAddToList.getAttribute("user-id");
-                console.log(userId);
                 let bookId = buttonAddToList.getAttribute("book-id");
-                console.log(bookId);
                 let option = buttonAddToList.getAttribute("class");
-                console.log(option);
 
                 new FETCHrequest(`${nodeApiUrl}/bookmarks`, 'POST', {
                         user_id: userId,

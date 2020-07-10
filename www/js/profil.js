@@ -78,35 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 .fetch()
                 .then(fetchData => {
                     // console.log(bookmark.options[0]);
-                    displayBookmarksPerSection('favorite', bookmark.options[0], fetchData.items[0]);
-                    displayBookmarksPerSection('have_read', bookmark.options[0], fetchData.items[0]);
-                    displayBookmarksPerSection('reading', bookmark.options[0], fetchData.items[0]);
-                    displayBookmarksPerSection('to_buy', bookmark.options[0], fetchData.items[0]);
-                    displayBookmarksPerSection('to_sell', bookmark.options[0], fetchData.items[0]);
-
-                    //     if (bookmark.options[0] === 'favorite') {
-                    //         bookmarksFavorite.innerHTML += `
-                    //     <div style="display:flex">
-                    //          <img src="${fetchData.items[0].volumeInfo.imageLinks.thumbnail}"
-                    //             alt="${fetchData.items[0].volumeInfo.title}" >
-                    //         <div>
-                    //             <p>${bookmark.options[0].charAt(0).toUpperCase() + bookmark.options[0].slice(1).replace('_', ' ')}</p>
-                    //             <p>${fetchData.items[0].volumeInfo.title}</p>
-                    //         </div>
-                    //     </div>
-                    // `;
-                    //     }
-
-                    //     myBookmarks.innerHTML += `
-                    //     <div style="display:flex">
-                    //          <img src="${fetchData.items[0].volumeInfo.imageLinks.thumbnail}"
-                    //             alt="${fetchData.items[0].volumeInfo.title}" >
-                    //         <div>
-                    //             <p>${bookmark.options[0].charAt(0).toUpperCase() + bookmark.options[0].slice(1).replace('_', ' ')}</p>
-                    //             <p>${fetchData.items[0].volumeInfo.title}</p>
-                    //         </div>
-                    //     </div>
-                    // `;
+                    console.log(bookmark.options[0]._id)
+                    displayBookmarksPerSection('favorite', bookmark, fetchData.items[0]);
+                    displayBookmarksPerSection('have_read', bookmark, fetchData.items[0]);
+                    displayBookmarksPerSection('reading', bookmark, fetchData.items[0]);
+                    displayBookmarksPerSection('to_buy', bookmark, fetchData.items[0]);
                 })
                 .catch(fetchError => {
                     console.log(fetchError)
@@ -117,16 +93,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const displayBookmarksPerSection = (section, bookmark, data) => {
         console.log(section)
-        if (bookmark === section) {
+        if (bookmark.options[0] === section) {
             eval(section).innerHTML += `
                     <div style="display:flex">
                          <img src="${data.volumeInfo.imageLinks.thumbnail}"
                             alt="${data.volumeInfo.title}" >
                         <div>
                             <p>${data.volumeInfo.title}</p>
+                            <button class="deleteBookmark" bookmark-id="${bookmark._id}">Supprimer de la liste</button>
                         </div>
                     </div>
                 `;
+        }
+        let buttonsDeleteBookmark = document.querySelectorAll(".deleteBookmark");
+        deleteBookmark(buttonsDeleteBookmark);
+    }
+
+    const deleteBookmark = buttons => {
+        for (let button of buttons) {
+            button.addEventListener("click", event => {
+                event.preventDefault();
+                let bookmarkId = button.getAttribute("bookmark-id");
+
+                new FETCHrequest(`${nodeApiUrl}/profil/bookmark/${bookmarkId}`, 'DELETE',{
+                            id: bookmarkId
+                        })
+                    .fetch()
+                    .then(fetchData => {
+                        console.log(fetchData);
+                    })
+                    .catch(fetchError => {
+                        console.log(fetchError);
+                    })
+            document.location.reload(true);
+                
+            })
         }
     }
 
